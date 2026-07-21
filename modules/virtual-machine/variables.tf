@@ -38,16 +38,16 @@ variable "machine" {
 variable "bios" {
   description = "The BIOS type."
   type        = string
-  default     = "seabios"
+  default     = "ovmf"
 }
 
 variable "scsi_hardware" {
-  description = "The SCIS hardware type."
+  description = "The SCSI hardware type."
   type        = string
   default     = "virtio-scsi-single"
 }
 
-variable "operating_system" {
+variable "operating_system_type" {
   description = "The operating system type."
   type        = string
   default     = "l26"
@@ -69,10 +69,16 @@ variable "memory" {
   type        = number
 }
 
-variable "ballooning_enabled" {
-  description = "Whether to enable ballooning."
+variable "memory_ballooning" {
+  description = "Whether to enable memory ballooning."
   type        = bool
   default     = true
+}
+
+variable "boot_order" {
+  description = "List of boot device to boot from in the order they appear."
+  type        = list(string)
+  default     = null
 }
 
 variable "datastore_id" {
@@ -87,14 +93,8 @@ variable "disk_datastore_id" {
   default     = null
 }
 
-variable "snippets_datastore_id" {
-  description = "The datastore ID for the snippets."
-  type        = string
-  default     = "local"
-}
-
-variable "cloud_init_datastore_id" {
-  description = "The datastore ID for the cloud-init disk."
+variable "disk_image_id" {
+  description = "The ID of the image to use for the virtual machine disk."
   type        = string
   default     = null
 }
@@ -110,14 +110,14 @@ variable "disk_interface" {
   default     = "scsi0"
 }
 
-variable "disk_iothread_enabled" {
+variable "disk_iothread" {
   description = "Whether to enable iothread on the disk."
   type        = bool
   default     = true
 }
 
-variable "disk_discard_enabled" {
-  description = "Whether to enable disard on the disk."
+variable "disk_discard" {
+  description = "Whether to enable discard on the disk."
   type        = bool
   default     = true
 }
@@ -150,16 +150,16 @@ variable "additional_disks" {
   default = {}
 }
 
+variable "cdrom_file_id" {
+  description = "The ID of the ISO to use for the cdrom."
+  type        = string
+  default     = null
+}
+
 variable "cdrom_interface" {
   description = "The name of the default CD-ROM interface."
   type        = string
   default     = "ide3"
-}
-
-variable "boot_order" {
-  description = "List of boot device to boot from in the order they appear."
-  type        = list(string)
-  default     = null
 }
 
 variable "rng_enabled" {
@@ -216,23 +216,13 @@ variable "agent_enabled" {
   default     = true
 }
 
-variable "password_hash" {
-  description = "Hash of the password set by cloud-init."
+# Terraform does not proide functions for checking if an IP is in a CIDR block.
+# This is an inelegant solution to make sure we are pulling the correct IP
+# from the list of IPs returned by the QEMU agent.
+variable "ipv4_cidr_prefix" {
+  description = "The prefix of the CIDR block used to match the IPv4 address."
   type        = string
-  default     = null
-  sensitive   = true
-}
-
-variable "image_id" {
-  description = "The ID of the image to use for the virtual machine."
-  type        = string
-  default     = null
-}
-
-variable "file_id" {
-  description = "The ID of the ISO to use."
-  type        = string
-  default     = null
+  default     = "10.30"
 }
 
 variable "startup_order" {
@@ -315,16 +305,22 @@ variable "ipv4_gateway" {
   default     = null
 }
 
-variable "ssh_authorized_keys" {
-  description = "List of SSH public keys."
-  type        = list(string)
-  default     = null
-}
-
-variable "create_serial_device" {
+variable "serial_device_enabled" {
   description = "Whether to create a serial device. Required for cloud-init to work."
   type        = bool
   default     = true
+}
+
+variable "snippets_datastore_id" {
+  description = "The datastore ID for the snippets."
+  type        = string
+  default     = "local"
+}
+
+variable "cloud_init_datastore_id" {
+  description = "The datastore ID for the cloud-init disk."
+  type        = string
+  default     = null
 }
 
 variable "custom_user_cloud_init_enabled" {
@@ -335,8 +331,21 @@ variable "custom_user_cloud_init_enabled" {
 
 variable "custom_user_cloud_init" {
   description = "Custom user cloud-init in HCL format to be merged with the defaults."
-  type        = any
+  type        = map(any)
   default     = {}
+}
+
+variable "ssh_authorized_keys" {
+  description = "List of SSH public keys set by cloud-init."
+  type        = list(string)
+  default     = null
+}
+
+variable "password_hash" {
+  description = "Hash of the password set by cloud-init."
+  type        = string
+  default     = null
+  sensitive   = true
 }
 
 variable "host_pci" {
@@ -381,36 +390,37 @@ variable "tags" {
 ################################################################
 # Firewall
 ################################################################
+
 variable "firewall_enabled" {
   description = "Whether to enable the firewall."
   type        = bool
   default     = true
 }
-variable "firewall_dhcp_enabled" {
+variable "firewall_dhcp" {
   description = "Whether to enable DHCP on the firewall."
   type        = bool
   default     = true
 }
 
-variable "firewall_ndp_enabled" {
+variable "firewall_ndp" {
   description = "Whether to enable NDP on the firewall."
   type        = bool
   default     = true
 }
 
-variable "firewall_router_advertisement_enabled" {
+variable "firewall_router_advertisement" {
   description = "Whether to enable router advertisement on the firewall."
   type        = bool
   default     = false
 }
 
-variable "firewall_mac_filter_enabled" {
+variable "firewall_mac_filter" {
   description = "Whether to enable MAC filter on the firewall."
   type        = bool
   default     = true
 }
 
-variable "firewall_ip_filter_enabled" {
+variable "firewall_ip_filter" {
   description = "Whether to enable IP filter on the firewall."
   type        = bool
   default     = false
