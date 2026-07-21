@@ -1,6 +1,7 @@
 ################################################################
 # Groups
 ################################################################
+
 resource "proxmox_virtual_environment_group" "this" {
   for_each = { for group in var.groups : group.name => group }
 
@@ -21,6 +22,7 @@ resource "proxmox_virtual_environment_group" "this" {
 ################################################################
 # Users
 ################################################################
+
 resource "random_password" "user" {
   for_each = { for user in var.users : user.username => user if user.password == null }
 
@@ -57,6 +59,7 @@ resource "proxmox_virtual_environment_user" "this" {
 ################################################################
 # User Tokens
 ################################################################
+
 locals {
   user_tokens = flatten([
     for user in var.users : [

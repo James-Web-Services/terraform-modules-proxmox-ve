@@ -38,16 +38,16 @@ variable "machine" {
 variable "bios" {
   description = "The BIOS type."
   type        = string
-  default     = "seabios"
+  default     = "ovmf"
 }
 
 variable "scsi_hardware" {
-  description = "The SCIS hardware type."
+  description = "The SCSI hardware type."
   type        = string
   default     = "virtio-scsi-single"
 }
 
-variable "operating_system" {
+variable "operating_system_type" {
   description = "The operating system type."
   type        = string
   default     = "l26"
@@ -69,16 +69,34 @@ variable "memory" {
   type        = number
 }
 
-variable "disk_datastore_id" {
-  description = "The datastore ID for the virtual machine disk."
+variable "memory_ballooning" {
+  description = "Whether to enable memory ballooning."
+  type        = bool
+  default     = true
+}
+
+variable "boot_order" {
+  description = "List of boot device to boot from in the order they appear."
+  type        = list(string)
+  default     = null
+}
+
+variable "datastore_id" {
+  description = "The datastore ID for all disks. This includes the root disk, EFI disk, and any additional disks. If a datastore ID is specified for a specific resource, that datastore ID will be used instead."
   type        = string
   default     = "local-lvm"
 }
 
-variable "snippets_datastore_id" {
-  description = "The datastore ID for the snippets."
+variable "disk_datastore_id" {
+  description = "The datastore ID for the virtual machine disk."
   type        = string
-  default     = "local"
+  default     = null
+}
+
+variable "disk_image_id" {
+  description = "The ID of the image to use for the virtual machine disk."
+  type        = string
+  default     = null
 }
 
 variable "disk_size" {
@@ -92,30 +110,104 @@ variable "disk_interface" {
   default     = "scsi0"
 }
 
-variable "disk_iothread_enabled" {
+variable "disk_iothread" {
   description = "Whether to enable iothread on the disk."
   type        = bool
   default     = true
 }
 
-variable "disk_discard_enabled" {
-  description = "Whether to enable disard on the disk."
+variable "disk_discard" {
+  description = "Whether to enable discard on the disk."
   type        = bool
   default     = true
+}
+
+variable "disk_cache" {
+  description = "Cache type on the disk."
+  type        = string
+  default     = "none"
+}
+
+variable "disk_ssd" {
+  description = "Whether to enable SSD emulation on the disk."
+  type        = bool
+  default     = false
 }
 
 variable "additional_disks" {
   description = "Map of additional disks to add to the virtual machine."
 
   type = map(object({
-    datastore_id = string
     size         = number
     interface    = string
+    datastore_id = optional(string)
     iothread     = optional(bool, true)
     discard      = optional(bool, true)
+    cache        = optional(string, "none")
+    ssd          = optional(bool, false)
   }))
 
   default = {}
+}
+
+variable "cdrom_file_id" {
+  description = "The ID of the ISO to use for the cdrom."
+  type        = string
+  default     = null
+}
+
+variable "cdrom_interface" {
+  description = "The name of the default CD-ROM interface."
+  type        = string
+  default     = "ide3"
+}
+
+variable "rng_enabled" {
+  description = "Whether the enable a RNG device."
+  type        = bool
+  default     = false
+}
+
+variable "rng_source" {
+  description = "The RNG source."
+  type        = string
+  default     = "/dev/urandom"
+}
+
+variable "rng_max_bytes" {
+  description = "The RNG max bytes."
+  type        = number
+  default     = 1024
+}
+
+variable "rng_period" {
+  description = "The RNG period."
+  type        = number
+  default     = 1000
+}
+
+variable "efi_disk_datastore_id" {
+  description = "The datastore ID for the EFI disk."
+  type        = string
+  default     = null
+}
+
+variable "efi_disk_type" {
+  description = "The size of the EFI disk (in MiB)."
+  type        = string
+  default     = "4m"
+}
+
+variable "efi_disk_file_format" {
+  description = "The file format of the EFI disk."
+  type        = string
+  default     = "raw"
+}
+
+variable "efi_disk_pre_enrolled_keys" {
+  description = "Whether to use standard secure boot keys."
+  type        = bool
+  default     = true
 }
 
 variable "agent_enabled" {
@@ -124,16 +216,13 @@ variable "agent_enabled" {
   default     = true
 }
 
-variable "password_hash" {
-  description = "Hash of the password set by cloud-init."
+# Terraform does not proide functions for checking if an IP is in a CIDR block.
+# This is an inelegant solution to make sure we are pulling the correct IP
+# from the list of IPs returned by the QEMU agent.
+variable "ipv4_cidr_prefix" {
+  description = "The prefix of the CIDR block used to match the IPv4 address."
   type        = string
-  default     = null
-  sensitive   = true
-}
-
-variable "image_id" {
-  description = "The ID of the image to use for the virtual machine."
-  type        = string
+  default     = "10.30"
 }
 
 variable "startup_order" {
@@ -216,16 +305,22 @@ variable "ipv4_gateway" {
   default     = null
 }
 
-variable "ssh_authorized_keys" {
-  description = "List of SSH public keys."
-  type        = list(string)
-  default     = null
-}
-
-variable "create_serial_device" {
+variable "serial_device_enabled" {
   description = "Whether to create a serial device. Required for cloud-init to work."
   type        = bool
   default     = true
+}
+
+variable "snippets_datastore_id" {
+  description = "The datastore ID for the snippets."
+  type        = string
+  default     = "local"
+}
+
+variable "cloud_init_datastore_id" {
+  description = "The datastore ID for the cloud-init disk."
+  type        = string
+  default     = null
 }
 
 variable "custom_user_cloud_init_enabled" {
@@ -236,8 +331,21 @@ variable "custom_user_cloud_init_enabled" {
 
 variable "custom_user_cloud_init" {
   description = "Custom user cloud-init in HCL format to be merged with the defaults."
-  type        = any
+  type        = map(any)
   default     = {}
+}
+
+variable "ssh_authorized_keys" {
+  description = "List of SSH public keys set by cloud-init."
+  type        = list(string)
+  default     = null
+}
+
+variable "password_hash" {
+  description = "Hash of the password set by cloud-init."
+  type        = string
+  default     = null
+  sensitive   = true
 }
 
 variable "host_pci" {
@@ -255,16 +363,22 @@ variable "host_pci" {
   default = {}
 }
 
+variable "tpm_enabled" {
+  description = "Whether to create a TPM device."
+  type        = bool
+  default     = false
+}
+
 variable "tpm_datastore_id" {
   description = "The datastore ID for the virtual machine TPM."
   type        = string
-  default     = "local-lvm"
+  default     = null
 }
 
 variable "tpm_version" {
   description = "TPM version to use."
   type        = string
-  default     = null
+  default     = "v2.0"
 }
 
 variable "tags" {
@@ -276,36 +390,37 @@ variable "tags" {
 ################################################################
 # Firewall
 ################################################################
+
 variable "firewall_enabled" {
   description = "Whether to enable the firewall."
   type        = bool
   default     = true
 }
-variable "firewall_dhcp_enabled" {
+variable "firewall_dhcp" {
   description = "Whether to enable DHCP on the firewall."
   type        = bool
   default     = true
 }
 
-variable "firewall_ndp_enabled" {
+variable "firewall_ndp" {
   description = "Whether to enable NDP on the firewall."
   type        = bool
   default     = true
 }
 
-variable "firewall_router_advertisement_enabled" {
+variable "firewall_router_advertisement" {
   description = "Whether to enable router advertisement on the firewall."
   type        = bool
   default     = false
 }
 
-variable "firewall_mac_filter_enabled" {
+variable "firewall_mac_filter" {
   description = "Whether to enable MAC filter on the firewall."
   type        = bool
   default     = true
 }
 
-variable "firewall_ip_filter_enabled" {
+variable "firewall_ip_filter" {
   description = "Whether to enable IP filter on the firewall."
   type        = bool
   default     = false

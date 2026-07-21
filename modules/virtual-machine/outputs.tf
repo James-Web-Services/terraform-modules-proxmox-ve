@@ -1,3 +1,14 @@
+locals {
+  # This finds the index of the first IPv4 address that starts with the specified prefix.
+  # We use this index to get the corresponding MAC address and IPv4 address.
+  ipv4_index = one([
+    for i, lst in proxmox_virtual_environment_vm.this.ipv4_addresses : i
+    if anytrue([
+      for ip in lst : startswith(ip, var.ipv4_cidr_prefix)
+    ])
+  ])
+}
+
 output "id" {
   description = "The ID."
   value       = tonumber(proxmox_virtual_environment_vm.this.id)
@@ -15,16 +26,12 @@ output "node_name" {
 
 output "ipv4_address" {
   description = "The IPv4 address."
-  value = try([
-    for v in proxmox_virtual_environment_vm.this.ipv4_addresses : v if !contains(v, "127.0.0.1")
-  ][0][0], null)
+  value       = one(proxmox_virtual_environment_vm.this.ipv4_addresses[local.ipv4_index])
 }
 
 output "mac_address" {
   description = "The MAC address."
-  value = try([
-    for v in proxmox_virtual_environment_vm.this.mac_addresses : v if v != "00:00:00:00:00:00"
-  ][0], null)
+  value       = proxmox_virtual_environment_vm.this.mac_addresses[local.ipv4_index]
 }
 
 output "user_cloud_init_snippet_file_name" {
