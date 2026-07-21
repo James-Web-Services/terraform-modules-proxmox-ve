@@ -69,16 +69,34 @@ variable "memory" {
   type        = number
 }
 
+variable "ballooning_enabled" {
+  description = "Whether to enable ballooning."
+  type        = bool
+  default     = true
+}
+
+variable "datastore_id" {
+  description = "The datastore ID for all disks. This includes the root disk, EFI disk, and any additional disks. If a datastore ID is specified for a specific resource, that datastore ID will be used instead."
+  type        = string
+  default     = "local-lvm"
+}
+
 variable "disk_datastore_id" {
   description = "The datastore ID for the virtual machine disk."
   type        = string
-  default     = "local-lvm"
+  default     = null
 }
 
 variable "snippets_datastore_id" {
   description = "The datastore ID for the snippets."
   type        = string
   default     = "local"
+}
+
+variable "cloud_init_datastore_id" {
+  description = "The datastore ID for the cloud-init disk."
+  type        = string
+  default     = null
 }
 
 variable "disk_size" {
@@ -104,18 +122,92 @@ variable "disk_discard_enabled" {
   default     = true
 }
 
+variable "disk_cache" {
+  description = "Cache type on the disk."
+  type        = string
+  default     = "none"
+}
+
+variable "disk_ssd" {
+  description = "Whether to enable SSD emulation on the disk."
+  type        = bool
+  default     = false
+}
+
 variable "additional_disks" {
   description = "Map of additional disks to add to the virtual machine."
 
   type = map(object({
-    datastore_id = string
     size         = number
     interface    = string
+    datastore_id = optional(string)
     iothread     = optional(bool, true)
     discard      = optional(bool, true)
+    cache        = optional(string, "none")
+    ssd          = optional(bool, false)
   }))
 
   default = {}
+}
+
+variable "cdrom_interface" {
+  description = "The name of the default CD-ROM interface."
+  type        = string
+  default     = "ide3"
+}
+
+variable "boot_order" {
+  description = "List of boot device to boot from in the order they appear."
+  type        = list(string)
+  default     = null
+}
+
+variable "rng_enabled" {
+  description = "Whether the enable a RNG device."
+  type        = bool
+  default     = false
+}
+
+variable "rng_source" {
+  description = "The RNG source."
+  type        = string
+  default     = "/dev/urandom"
+}
+
+variable "rng_max_bytes" {
+  description = "The RNG max bytes."
+  type        = number
+  default     = 1024
+}
+
+variable "rng_period" {
+  description = "The RNG period."
+  type        = number
+  default     = 1000
+}
+
+variable "efi_disk_datastore_id" {
+  description = "The datastore ID for the EFI disk."
+  type        = string
+  default     = null
+}
+
+variable "efi_disk_type" {
+  description = "The size of the EFI disk (in MiB)."
+  type        = string
+  default     = "4m"
+}
+
+variable "efi_disk_file_format" {
+  description = "The file format of the EFI disk."
+  type        = string
+  default     = "raw"
+}
+
+variable "efi_disk_pre_enrolled_keys" {
+  description = "Whether to use standard secure boot keys."
+  type        = bool
+  default     = true
 }
 
 variable "agent_enabled" {
@@ -134,6 +226,13 @@ variable "password_hash" {
 variable "image_id" {
   description = "The ID of the image to use for the virtual machine."
   type        = string
+  default     = null
+}
+
+variable "file_id" {
+  description = "The ID of the ISO to use."
+  type        = string
+  default     = null
 }
 
 variable "startup_order" {
@@ -255,16 +354,22 @@ variable "host_pci" {
   default = {}
 }
 
+variable "tpm_enabled" {
+  description = "Whether to create a TPM device."
+  type        = bool
+  default     = false
+}
+
 variable "tpm_datastore_id" {
   description = "The datastore ID for the virtual machine TPM."
   type        = string
-  default     = "local-lvm"
+  default     = null
 }
 
 variable "tpm_version" {
   description = "TPM version to use."
   type        = string
-  default     = null
+  default     = "v2.0"
 }
 
 variable "tags" {

@@ -16,7 +16,7 @@ output "node_name" {
 output "ipv4_address" {
   description = "The IPv4 address."
   value = try([
-    for v in proxmox_virtual_environment_vm.this.ipv4_addresses : v if !contains(v, "127.0.0.1")
+    for v in proxmox_virtual_environment_vm.this.ipv4_addresses : v if length(v) == 1 && !contains(v, "127.0.0.1")
   ][0][0], null)
 }
 

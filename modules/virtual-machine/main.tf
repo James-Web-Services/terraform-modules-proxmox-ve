@@ -67,6 +67,11 @@ resource "proxmox_virtual_environment_vm" "this" {
   bios          = var.bios
   scsi_hardware = var.scsi_hardware
 
+  boot_order = var.boot_order != null ? var.boot_order : concat(
+    [var.disk_interface],
+    var.file_id != null ? [var.cdrom_interface] : [], ["net0"]
+  )
+
   agent {
     enabled = var.agent_enabled
 
@@ -88,7 +93,7 @@ resource "proxmox_virtual_environment_vm" "this" {
 
   memory {
     dedicated = var.memory
-    floating  = var.memory
+    floating  = var.ballooning_enabled ? var.memory : 0
   }
 
   network_device {
@@ -98,24 +103,58 @@ resource "proxmox_virtual_environment_vm" "this" {
     firewall    = var.network_firewall_enabled
   }
 
+  dynamic "cdrom" {
+    for_each = var.file_id != null ? [1] : []
+
+    content {
+      file_id   = var.file_id
+      interface = var.cdrom_interface
+    }
+  }
+
   disk {
-    datastore_id = var.disk_datastore_id
+    datastore_id = coalesce(var.disk_datastore_id, var.datastore_id)
     size         = var.disk_size
     import_from  = var.image_id
     interface    = var.disk_interface
     iothread     = var.disk_iothread_enabled
     discard      = var.disk_discard_enabled ? "on" : "ignore"
+    cache        = var.disk_cache
+    ssd          = var.disk_ssd
   }
 
   dynamic "disk" {
     for_each = var.additional_disks
 
     content {
-      datastore_id = disk.value.datastore_id
+      datastore_id = coalesce(disk.value.datastore_id, var.datastore_id)
       size         = disk.value.size
       interface    = disk.value.interface
       iothread     = disk.value.iothread
       discard      = disk.value.discard ? "on" : "ignore"
+      cache        = disk.value.cache
+      ssd          = disk.value.ssd
+    }
+  }
+
+  dynamic "efi_disk" {
+    for_each = var.bios == "ovmf" ? [1] : []
+
+    content {
+      datastore_id      = coalesce(var.efi_disk_datastore_id, var.datastore_id)
+      file_format       = var.efi_disk_file_format
+      type              = var.efi_disk_type
+      pre_enrolled_keys = var.efi_disk_pre_enrolled_keys
+    }
+  }
+
+  dynamic "rng" {
+    for_each = var.rng_enabled ? [1] : []
+
+    content {
+      source    = var.rng_source
+      max_bytes = var.rng_max_bytes
+      period    = var.rng_period
     }
   }
 
@@ -133,10 +172,10 @@ resource "proxmox_virtual_environment_vm" "this" {
   }
 
   dynamic "tpm_state" {
-    for_each = var.tpm_version != null ? [1] : []
+    for_each = var.tpm_enabled ? [1] : []
 
     content {
-      datastore_id = var.tpm_datastore_id
+      datastore_id = coalesce(var.tpm_datastore_id, var.datastore_id)
       version      = var.tpm_version
     }
   }
@@ -158,7 +197,7 @@ resource "proxmox_virtual_environment_vm" "this" {
   }
 
   initialization {
-    datastore_id      = var.disk_datastore_id
+    datastore_id      = coalesce(var.cloud_init_datastore_id, var.datastore_id)
     user_data_file_id = try(proxmox_virtual_environment_file.user_cloud_init[0].id, null)
 
     ip_config {
