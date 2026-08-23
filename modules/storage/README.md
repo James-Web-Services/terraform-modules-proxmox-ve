@@ -3,13 +3,13 @@
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_proxmox"></a> [proxmox](#requirement\_proxmox) | 0.111.0 |
+| <a name="requirement_proxmox"></a> [proxmox](#requirement\_proxmox) | 0.111.1 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | 0.111.0 |
+| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | 0.111.1 |
 
 ## Modules
 
@@ -19,8 +19,8 @@ No modules.
 
 | Name | Type |
 | ---- | ---- |
-| [proxmox_storage_directory.this](https://registry.terraform.io/providers/bpg/proxmox/0.111.0/docs/resources/storage_directory) | resource |
-| [proxmox_storage_lvmthin.this](https://registry.terraform.io/providers/bpg/proxmox/0.111.0/docs/resources/storage_lvmthin) | resource |
+| [proxmox_storage_directory.this](https://registry.terraform.io/providers/bpg/proxmox/0.111.1/docs/resources/storage_directory) | resource |
+| [proxmox_storage_lvmthin.this](https://registry.terraform.io/providers/bpg/proxmox/0.111.1/docs/resources/storage_lvmthin) | resource |
 
 ## Inputs
 
