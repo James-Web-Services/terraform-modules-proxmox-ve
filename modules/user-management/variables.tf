@@ -41,6 +41,12 @@ variable "users" {
       comment               = string
       expiration_date       = optional(string)
       privileges_separation = optional(bool, false)
+
+      acls = optional(list(object({
+        path      = string
+        role_id   = string
+        propagate = optional(bool, true)
+      })), [])
     })), [])
   }))
 
