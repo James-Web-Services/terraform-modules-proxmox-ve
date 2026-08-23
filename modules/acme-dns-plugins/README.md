@@ -3,13 +3,13 @@
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_proxmox"></a> [proxmox](#requirement\_proxmox) | 0.111.0 |
+| <a name="requirement_proxmox"></a> [proxmox](#requirement\_proxmox) | 0.111.1 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | 0.111.0 |
+| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | 0.111.1 |
 
 ## Modules
 
@@ -19,7 +19,7 @@ No modules.
 
 | Name | Type |
 | ---- | ---- |
-| [proxmox_acme_dns_plugin.this](https://registry.terraform.io/providers/bpg/proxmox/0.111.0/docs/resources/acme_dns_plugin) | resource |
+| [proxmox_acme_dns_plugin.this](https://registry.terraform.io/providers/bpg/proxmox/0.111.1/docs/resources/acme_dns_plugin) | resource |
 
 ## Inputs
 
