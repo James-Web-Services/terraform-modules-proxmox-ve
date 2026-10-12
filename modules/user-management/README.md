@@ -3,14 +3,14 @@
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_proxmox"></a> [proxmox](#requirement\_proxmox) | 0.111.1 |
+| <a name="requirement_proxmox"></a> [proxmox](#requirement\_proxmox) | 0.116.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.0 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | 0.111.1 |
+| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | 0.116.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | ~> 3.0 |
 
 ## Modules
@@ -21,12 +21,12 @@ No modules.
 
 | Name | Type |
 | ---- | ---- |
-| [proxmox_acl.group](https://registry.terraform.io/providers/bpg/proxmox/0.111.1/docs/resources/acl) | resource |
-| [proxmox_acl.user](https://registry.terraform.io/providers/bpg/proxmox/0.111.1/docs/resources/acl) | resource |
-| [proxmox_acl.user_token](https://registry.terraform.io/providers/bpg/proxmox/0.111.1/docs/resources/acl) | resource |
-| [proxmox_user_token.this](https://registry.terraform.io/providers/bpg/proxmox/0.111.1/docs/resources/user_token) | resource |
-| [proxmox_virtual_environment_group.this](https://registry.terraform.io/providers/bpg/proxmox/0.111.1/docs/resources/virtual_environment_group) | resource |
-| [proxmox_virtual_environment_user.this](https://registry.terraform.io/providers/bpg/proxmox/0.111.1/docs/resources/virtual_environment_user) | resource |
+| [proxmox_acl.group](https://registry.terraform.io/providers/bpg/proxmox/0.116.0/docs/resources/acl) | resource |
+| [proxmox_acl.user](https://registry.terraform.io/providers/bpg/proxmox/0.116.0/docs/resources/acl) | resource |
+| [proxmox_acl.user_token](https://registry.terraform.io/providers/bpg/proxmox/0.116.0/docs/resources/acl) | resource |
+| [proxmox_user_token.this](https://registry.terraform.io/providers/bpg/proxmox/0.116.0/docs/resources/user_token) | resource |
+| [proxmox_virtual_environment_group.this](https://registry.terraform.io/providers/bpg/proxmox/0.116.0/docs/resources/virtual_environment_group) | resource |
+| [proxmox_virtual_environment_user.this](https://registry.terraform.io/providers/bpg/proxmox/0.116.0/docs/resources/virtual_environment_user) | resource |
 | [random_password.user](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 
 ## Inputs
