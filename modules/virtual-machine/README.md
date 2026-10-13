@@ -3,14 +3,14 @@
 
 | Name | Version |
 | ---- | ------- |
-| <a name="requirement_proxmox"></a> [proxmox](#requirement\_proxmox) | 0.111.0 |
+| <a name="requirement_proxmox"></a> [proxmox](#requirement\_proxmox) | 0.116.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.0 |
 
 ## Providers
 
 | Name | Version |
 | ---- | ------- |
-| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | 0.111.0 |
+| <a name="provider_proxmox"></a> [proxmox](#provider\_proxmox) | 0.116.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | ~> 3.0 |
 
 ## Modules
@@ -21,12 +21,12 @@ No modules.
 
 | Name | Type |
 | ---- | ---- |
-| [proxmox_virtual_environment_file.user_cloud_init](https://registry.terraform.io/providers/bpg/proxmox/0.111.0/docs/resources/virtual_environment_file) | resource |
-| [proxmox_virtual_environment_firewall_alias.this](https://registry.terraform.io/providers/bpg/proxmox/0.111.0/docs/resources/virtual_environment_firewall_alias) | resource |
-| [proxmox_virtual_environment_firewall_ipset.this](https://registry.terraform.io/providers/bpg/proxmox/0.111.0/docs/resources/virtual_environment_firewall_ipset) | resource |
-| [proxmox_virtual_environment_firewall_options.this](https://registry.terraform.io/providers/bpg/proxmox/0.111.0/docs/resources/virtual_environment_firewall_options) | resource |
-| [proxmox_virtual_environment_firewall_rules.this](https://registry.terraform.io/providers/bpg/proxmox/0.111.0/docs/resources/virtual_environment_firewall_rules) | resource |
-| [proxmox_virtual_environment_vm.this](https://registry.terraform.io/providers/bpg/proxmox/0.111.0/docs/resources/virtual_environment_vm) | resource |
+| [proxmox_virtual_environment_file.user_cloud_init](https://registry.terraform.io/providers/bpg/proxmox/0.116.0/docs/resources/virtual_environment_file) | resource |
+| [proxmox_virtual_environment_firewall_alias.this](https://registry.terraform.io/providers/bpg/proxmox/0.116.0/docs/resources/virtual_environment_firewall_alias) | resource |
+| [proxmox_virtual_environment_firewall_ipset.this](https://registry.terraform.io/providers/bpg/proxmox/0.116.0/docs/resources/virtual_environment_firewall_ipset) | resource |
+| [proxmox_virtual_environment_firewall_options.this](https://registry.terraform.io/providers/bpg/proxmox/0.116.0/docs/resources/virtual_environment_firewall_options) | resource |
+| [proxmox_virtual_environment_firewall_rules.this](https://registry.terraform.io/providers/bpg/proxmox/0.116.0/docs/resources/virtual_environment_firewall_rules) | resource |
+| [proxmox_virtual_environment_vm.this](https://registry.terraform.io/providers/bpg/proxmox/0.116.0/docs/resources/virtual_environment_vm) | resource |
 | [random_string.cloud_init](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 
 ## Inputs
